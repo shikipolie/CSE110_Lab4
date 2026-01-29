@@ -9,6 +9,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import java.util.function.Consumer;
 import edu.ucsd.spendingtracker.model.Expense;
+import edu.ucsd.spendingtracker.model.Category;
 
 public class SpendingView extends BorderPane {
     private VBox listContainer;
@@ -51,8 +52,7 @@ public class SpendingView extends BorderPane {
         this.setStyle("-fx-background-color: #FFFFFF;");
     }
 
-
-    public void addExpenseRow(int idx, String name, String catName, String color, double amount) {
+    public void addExpenseRow(int id, String name, String catName, String color, double amount) {
         HBox row = new HBox(10);
         row.setPrefSize(450, 40);
         row.setPadding(new Insets(5, 10, 5, 10));
@@ -60,6 +60,7 @@ public class SpendingView extends BorderPane {
         row.setStyle("-fx-background-color: " + color + "; -fx-border-color: #D3D3D3; " +
                 "-fx-border-width: 0 0 1 0; -fx-font-weight: bold; " +
                 "-fx-border-radius: 5px; -fx-background-radius: 5px;");
+
 
         Label nameL = new Label(name);
         nameL.setPrefWidth(200);
@@ -69,10 +70,18 @@ public class SpendingView extends BorderPane {
         Label amtL = new Label("$" + String.format("%.2f", amount));
         amtL.setPrefWidth(80);
         amtL.setAlignment(Pos.CENTER_RIGHT);
+        Button deleteBtn = new Button("X");
+        deleteBtn.setStyle("-fx-background-color: #ff6961; -fx-text-fill: white;");
+        deleteBtn.setOnAction(e -> {
+            if (onDeleteHandler != null)
+                onDeleteHandler.accept(id);
+        });
 
-        row.getChildren().addAll(new Label(idx + "."), nameL, catL, amtL);
+
+        row.getChildren().addAll(nameL, catL, amtL, deleteBtn);
         listContainer.getChildren().add(row);
     }
+
 
     public void showAddExpenseModal(Consumer<Expense> onSave) {
         Stage modal = new Stage();
@@ -113,4 +122,19 @@ public class SpendingView extends BorderPane {
     public Button getSummaryButton() {
         return summaryButton;
     }
+
+        public void clearList() {
+        listContainer.getChildren().clear();
+    }
+
+
+    public void setOnDelete(Consumer<Integer> handler) {
+        this.onDeleteHandler = handler;
+    }
+
+
+    public Button getOpenModalButton() {
+        return openAddModalBtn;
+    }
+
 }
